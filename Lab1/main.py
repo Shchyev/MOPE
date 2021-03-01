@@ -1,6 +1,10 @@
 from random import randrange
+from time import perf_counter
+
+startProgram = perf_counter()
 
 # Змінні
+
 genLimitMin = 0
 genLimitMax = 20
 
@@ -27,6 +31,7 @@ x3norm = []
 separatedX = [x1, x2, x3]
 maxY = 0
 result = []
+
 # Матриця 8х3
 for i in range(0, 8):
     x.append([])
@@ -82,3 +87,4 @@ for i in range(8):
 print("- "*26)
 print("Еталонний Y: " + str(refY))
 print(("Y, що задовольняє критерій: " + str(maxY)))
+print("Час виконання програми(секунди): " + str((perf_counter() - startProgram)) + "s")
