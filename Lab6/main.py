@@ -23,7 +23,7 @@ student_lst = None
 d = None
 q = None
 f3 = None
-
+coefSign = []
 
 class Perevirku:
     def get_cohren_value(self, size_of_selections, qty_of_selections, significance):
@@ -106,7 +106,7 @@ def check_result(b_lst, k):
     return y_i
 
 
-def student_test(b_lst, number_x=10):
+def student_test(b_lst, number_x=10, coefSign=[]):
     dispersion_b = sqrt(dispersion_b2)
     for column in range(number_x + 1):
         t_practice = 0
@@ -118,6 +118,9 @@ def student_test(b_lst, number_x=10):
                 t_practice += average_y[row] * matrix_pfe[row][column - 1]
         if fabs(t_practice / dispersion_b) < t_theoretical:
             b_lst[column] = 0
+    for i in range(len(b_lst)):
+        if b_lst[i] >= dispersion_b*t_practice[i]:
+            coefSign.append()
     return b_lst
 
 
@@ -235,7 +238,7 @@ def run_experiment():
                 m += 1
 
         dispersion_b2 = sum(dispersion_y) / (N * N * m)
-        student_lst = list(student_test(beta))
+        student_lst = list(student_test(beta, 10, coefSign))
         print("Отримане рівняння регресії з урахуванням критерія Стьюдента")
         print("{:.3f} + {:.3f} * X1 + {:.3f} * X2 + {:.3f} * X3 + {:.3f} * Х1X2 + {:.3f} * Х1X3 + {:.3f} * Х2X3"
               "+ {:.3f} * Х1Х2X3 + {:.3f} * X11^2 + {:.3f} * X22^2 + {:.3f} * X33^2 = ŷ\n\tПеревірка"
@@ -264,6 +267,7 @@ if __name__ == '__main__':
 
         try:
             adekvat += run_experiment()
+            print(f'Значимі коефіцієнти: {coefSign}')
         except Exception:
             continue
 
