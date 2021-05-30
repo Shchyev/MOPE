@@ -3,7 +3,7 @@ import numpy as np
 import sklearn.linear_model as lm
 from scipy.stats import f, t
 from numpy.linalg import solve
-
+from time import perf_counter
 
 def regression(x, b):
     y = sum([x[i] * b[i] for i in range(len(x))])
@@ -127,7 +127,10 @@ def check(X, Y, B, n, m, norm=False):
     y_aver = [round(sum(i) / len(i), 3) for i in Y]
     print('\nСереднє значення y:', y_aver)
 
+    start = perf_counter()
     dispersion_arr = dispersion(Y, y_aver, n, m)
+    time = perf_counter() - start
+    checkFalse = True if time > 0.1 else False
 
     qq = (1 + 0.95) / 2
     student_cr_table = t.ppf(df=f3, q=qq)
@@ -176,10 +179,10 @@ def check(X, Y, B, n, m, norm=False):
     print('Fp =', Fp)
     print('Ft =', Ft)
     if Fp < Ft:
-        print('Математична модель адекватна експериментальним даним')
+        print('Математична модель адекватна експериментальним даним, t = {}'.format(time))
         return True
     else:
-        print('Математична модель не адекватна експериментальним даним')
+        print('Математична модель не адекватна експериментальним даним, t = {}'.format(time))
         return False
 
 
@@ -265,7 +268,10 @@ def linear(n, m):
 
     y_average, B = regression_equation(x, y, n)
 
+    start = perf_counter()
     dispersion_arr = dispersion(y, y_average, n, m)
+    time = perf_counter()-start
+    checkFalse = True if time > 0.1 else False
 
     temp_cohren = f.ppf(q=(1 - q / f1), dfn=f2, dfd=(f1 - 1) * f2)
     cohren_cr_table = temp_cohren / (temp_cohren + f1 - 1)
@@ -307,11 +313,11 @@ def linear(n, m):
     print('\nПеревірка адекватності за критерієм Фішера:\n')
     print('Розрахункове значення критерія Фішера: Fp =', Fp)
     print('Табличне значення критерія Фішера: Ft =', Ft)
-    if Fp < Ft:
-        print('Математична модель адекватна експериментальним даним')
+    if Fp < Ft and not checkFalse:
+        print('Математична модель адекватна експериментальним даним, t = {}'.format(time))
         return True
     else:
-        print('Математична модель не адекватна експериментальним даним')
+        print('Математична модель не адекватна експериментальним даним, t = {}'.format(time))
         return False
 
 
