@@ -47,9 +47,9 @@ dis3 = sum([((elem[2] - avgY3) ** 2) for elem in Y])/5
 deviation = mt.sqrt((2 * (2 * m - 2)) / (m * (m - 4)))
 
 
-fuv1 = dis1/dis2
-fuv2 = dis3/dis1
-fuv3 = dis3/dis2
+fuv1 = dis1/dis2 if dis1 >= dis2 else dis2/dis1
+fuv2 = dis3/dis1 if dis3 >= dis1 else dis1/dis3
+fuv3 = dis3/dis2 if dis3 >= dis2 else dis2/dis3
 
 sigmaUv1 = ((m - 2) / m) * fuv1
 sigmaUv2 = ((m - 2) / m) * fuv2
