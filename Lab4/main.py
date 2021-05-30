@@ -178,7 +178,7 @@ def check(X, Y, B, n, m, norm=False):
     print('\nПеревірка адекватності за критерієм Фішера')
     print('Fp =', Fp)
     print('Ft =', Ft)
-    if Fp < Ft:
+    if Fp < Ft and not checkFalse:
         print('Математична модель адекватна експериментальним даним, t = {}'.format(time))
         return True
     else:
