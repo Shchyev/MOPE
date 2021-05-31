@@ -174,74 +174,77 @@ def kriteriy_fishera(y, y_aver, y_new, n, m, d):
     return S_ad / S_kv_aver
 
 
-def check(X, Y, B, n, m):
-    print('\n\tПеревірка рівняння:')
-    f1 = m - 1
-    f2 = n
-    f3 = f1 * f2
-    q = 0.05
+def check(X, Y, B, n, m, f_count = 0):
 
-    student = partial(t.ppf, q=1 - q)
-    t_student = student(df=f3)
+        print('\n\tПеревірка рівняння:')
+        f1 = m - 1
+        f2 = n
+        f3 = f1 * f2
+        q = 0.05
 
-    G_kr = cohren(f1, f2)
+        student = partial(t.ppf, q=1 - q)
+        t_student = student(df=f3)
 
-    y_aver = [round(sum(i) / len(i), 3) for i in Y]
-    print('\nСереднє значення y:', y_aver)
+        G_kr = cohren(f1, f2)
 
-    disp = s_kv(Y, y_aver, n, m)
-    print('Дисперсія y:', disp)
+        y_aver = [round(sum(i) / len(i), 3) for i in Y]
+        print('\nСереднє значення y:', y_aver)
 
-    Gp = kriteriy_cochrana(Y, y_aver, n, m)
-    print(f'Gp = {Gp}')
-    if Gp < G_kr:
-        print(f'З ймовірністю {1 - q} дисперсії однорідні.')
-    else:
-        print("Необхідно збільшити кількість дослідів")
-        m += 1
-        main(n, m)
+        disp = s_kv(Y, y_aver, n, m)
+        print('Дисперсія y:', disp)
 
-    ts = kriteriy_studenta(X[:, 1:], Y, y_aver, n, m)
-    print('\nКритерій Стьюдента:\n', ts)
-    res = [t for t in ts if t > t_student]
-    final_k = [B[i] for i in range(len(ts)) if ts[i] in res]
-    print('\nКоефіцієнти {} статистично незначущі, тому ми виключаємо їх з рівняння.'.format(
-        [round(i, 3) for i in B if i not in final_k]))
-
-    y_new = []
-    for j in range(n):
-        y_new.append(regression([X[j][i] for i in range(len(ts)) if ts[i] in res], final_k))
-
-    print(f'\nЗначення "y" з коефіцієнтами {final_k}')
-    print(y_new)
-
-    d = len(res)
-    if d >= n:
-        print('\nF4 <= 0')
-        print('')
-        return
-    f4 = n - d
-
-    F_p = kriteriy_fishera(Y, y_aver, y_new, n, m, d)
-
-    fisher = partial(f.ppf, q=0.95)
-    f_t = fisher(dfn=f4, dfd=f3)
-    print('\nПеревірка адекватності за критерієм Фішера')
-    print('Fp =', F_p)
-    print('F_t =', f_t)
-    if F_p < f_t:
-        print('Математична модель адекватна експериментальним даним')
-    else:
-        print('Математична модель не адекватна експериментальним даним')
+        Gp = kriteriy_cochrana(Y, y_aver, n, m)
+        print(f'Gp = {Gp}')
+        if Gp < G_kr:
+            print(f'З ймовірністю {1 - q} дисперсії однорідні.')
 
 
-def main(n, m):
+
+        ts = kriteriy_studenta(X[:, 1:], Y, y_aver, n, m)
+        print('\nКритерій Стьюдента:\n', ts)
+        res = [t for t in ts if t > t_student]
+        final_k = [B[i] for i in range(len(ts)) if ts[i] in res]
+        print('\nКоефіцієнти {} статистично незначущі, тому ми виключаємо їх з рівняння.'.format(
+            [round(i, 3) for i in B if i not in final_k]))
+
+        y_new = []
+        for j in range(n):
+            y_new.append(regression([X[j][i] for i in range(len(ts)) if ts[i] in res], final_k))
+
+        print(f'\nЗначення "y" з коефіцієнтами {final_k}')
+        print(y_new)
+
+        d = len(res)
+        if d >= n:
+            print('\nF4 <= 0')
+            print('')
+            return
+        f4 = n - d
+
+        F_p = kriteriy_fishera(Y, y_aver, y_new, n, m, d)
+
+        fisher = partial(f.ppf, q=0.95)
+        f_t = fisher(dfn=f4, dfd=f3)
+
+        print('\nПеревірка адекватності за критерієм Фішера')
+        print('Fp =', F_p)
+        print('F_t =', f_t)
+        if F_p < f_t:
+            print('Математична модель адекватна експериментальним даним')
+        else:
+            print('Математична модель не адекватна експериментальним даним')
+            print("Необхідно збільшити кількість дослідів")
+            m += 1
+            main(n, m)
+
+
+def main(n, m, f_count = 0):
     X5, Y5, X5_norm = plan_matrix5(n, m)
 
     y5_aver = [round(sum(i) / len(i), 3) for i in Y5]
     B5 = find_coef(X5, y5_aver)
 
-    check(X5_norm, Y5, B5, n, m)
+    check(X5_norm, Y5, B5, n, m, 0)
 
 
 if __name__ == '__main__':
